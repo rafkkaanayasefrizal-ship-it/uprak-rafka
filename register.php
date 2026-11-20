@@ -1,24 +1,50 @@
 <?php
 include "koneksi.php";
 if (isset($_POST['masuk'])) {
+
     $nama = $_POST['nama'];
     $email = $_POST['email'];
     $no = $_POST['noHp'];
     $katasandi = $_POST['password'];
     $ulangi = $_POST['ulangi'];
+    if (empty($nama) || empty($email) || empty($no) || empty($password)) {
+        $error = "harap isi semua field";
+    } else {
+        if ($password != $ulangi) {
+            $error = "password harus sama dengan ulangi password";
+        } else {
+            if (strlen($password) < 6) {
+                $error = "password harus lebih dari 6 karakter";
+            } else {
+                if (ctype_alpha($password) || ctype_digit($password)) {
+                    $error = "harus terdiri huruf dan angka";
+                } else {
+                    $query = "SELECT * FROM tb_pelanggan WHERE email=:email";
+                    $komando = $konfig->prepare($query);
+                    $komando->execute([':email' => $email]);
+                    if ($komando->rowCount() > 0) {
+                        $error = "email sudah terdaftar";
+                    } else {
+                         $query = "insert into tb_pelanggan(nama_lengkap,email,no_hp,password)values(:nama_lengkap,:email,:no_hp,:password)";
+                    $komando = $konfig->prepare($query);
+                    $komando->execute([
+                        ':nama_lengkap' => $nama,
+                        ':email' => $email,
+                        ':no_hp' => $no,
+                        ':password' => $katasandi
 
-    $query = "insert into tb_pelanggan(nama_lengkap,email,no_hp,password)values(:nama_lengkap,:email,:no_hp,:password)";
-    $komando = $konfig->prepare($query);
-    $komando->execute([
-        ':nama_lengkap' => $_POST['nama'],
-        ':email' => $_POST['email'],
-        ':no_hp' => $_POST['noHp'],
-        ':password' => $_POST['password']
+                    ]);
+                     header("location:login.php");
 
-    ]);
-$hasil=$komando->fetch();
-    if($hasil->rowCount()>0){
 
+                    }
+                   
+
+
+                  
+                }
+            }
+        }
     }
 }
 
@@ -173,27 +199,27 @@ $hasil=$komando->fetch();
         <form action="" method="POST">
             <div class="form-group">
                 <label>Nama Lengkap</label>
-                <input type="text" name="nama" class="form-control" placeholder="Contoh: Budi Santoso" required>
+                <input type="text" name="nama" class="form-control" placeholder="Contoh: Budi Santoso">
             </div>
 
             <div class="form-group">
                 <label>Alamat Email</label>
-                <input type="email" name="email" class="form-control" placeholder="nama@email.com" required>
+                <input type="email" name="email" class="form-control" placeholder="nama@email.com">
             </div>
 
             <div class="form-group">
                 <label>Nomor WhatsApp / HP</label>
-                <input type="tel" name="noHp" class="form-control" placeholder="081234567890" required>
+                <input type="tel" name="noHp" class="form-control" placeholder="081234567890">
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Kata Sandi</label>
-                    <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter" required>
+                    <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter">
                 </div>
                 <div class="form-group">
                     <label>Ulangi Sandi</label>
-                    <input type="password" name="ulangi" class="form-control" placeholder="Ketik ulang kata sandi" required>
+                    <input type="password" name="ulangi" class="form-control" placeholder="Ketik ulang kata sandi">
                 </div>
             </div>
 

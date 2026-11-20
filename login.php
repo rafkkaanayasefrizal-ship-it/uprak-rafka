@@ -1,3 +1,7 @@
+<?php
+include "koneksi.php";
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -121,15 +125,15 @@
         <form action="" method="POST">
             <div class="form-group">
                 <label>Email Terdaftar</label>
-                <input type="email" class="form-control" placeholder="nama@email.com" required>
+                <input type="email" name="email"class="form-control" placeholder="nama@email.com" required>
             </div>
 
             <div class="form-group">
                 <label>Kata Sandi</label>
-                <input type="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                <input type="password" name="password"class="form-control" placeholder="Masukkan kata sandi" required>
             </div>
 
-            <button type="submit" class="btn-submit">Masuk ke Akun</button>
+            <button type="submit" name="masuk" class="btn-submit">Masuk ke Akun</button>
         </form>
 
         <div class="auth-footer">
