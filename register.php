@@ -5,8 +5,10 @@ if (isset($_POST['masuk'])) {
     $nama = $_POST['nama'];
     $email = $_POST['email'];
     $no = $_POST['noHp'];
-    $katasandi = $_POST['password'];
+    $password = $_POST['password'];
     $ulangi = $_POST['ulangi'];
+
+    $passwordhas=password_hash($password,PASSWORD_DEFAULT);
     if (empty($nama) || empty($email) || empty($no) || empty($password)) {
         $error = "harap isi semua field";
     } else {
@@ -31,7 +33,7 @@ if (isset($_POST['masuk'])) {
                         ':nama_lengkap' => $nama,
                         ':email' => $email,
                         ':no_hp' => $no,
-                        ':password' => $katasandi
+                        ':password' => $passwordhas
 
                     ]);
                      header("location:login.php");
@@ -193,7 +195,7 @@ if (isset($_POST['masuk'])) {
         </div>
 
         <div class="alert-box">
-            <span>Pesan status pendaftaran ditampilkan di sini</span>
+            <span> peringatan<?=  $error; ?></span>
         </div>
 
         <form action="" method="POST">

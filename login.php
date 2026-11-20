@@ -1,5 +1,17 @@
 <?php
 include "koneksi.php";
+$email=$_POST['email'];
+$password=$_POST['password'];
+
+$query="select*from tb_pelanggan where email=:email and password=:password";
+$komando=$konfig->prepare($query);
+$komando->execute([
+    ':email'=>$email,
+    ':password'=>$password
+]);
+
+$hasil=$komando-> fetch();
+
 ?>
 
 <!DOCTYPE html>
