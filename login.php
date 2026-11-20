@@ -1,21 +1,36 @@
 <?php
 include "koneksi.php";
-$email=$_POST['email'];
-$password=$_POST['password'];
+$email = $_POST['email'];
+$password = $_POST['password'];
+if (empty($email) || empty($password)) {
+    $error = "field harus di isi";
+} else {
+    $query = "select*from tb_pelanggan where email=:email and password=:password";
+    $komando = $konfig->prepare($query);
+    $komando->execute([
+        ':email' => $email,
+        ':password' => $password
+    ]);
 
-$query="select*from tb_pelanggan where email=:email and password=:password";
-$komando=$konfig->prepare($query);
-$komando->execute([
-    ':email'=>$email,
-    ':password'=>$password
-]);
-
-$hasil=$komando-> fetch();
+    if ($komando->rowCount() > 0) {
+        if ($_SESSION['status_member'] != "Aktif") {
+            $error = "akun anda sedang dinonaktifkan";
+        } else {
+            $hasil = $komando->fetch();
+            if (password_verify($password, $hasil['password'])) {
+                header("location:dashboard.php");
+            } else {
+                $error = "password anda salah";
+            }
+        }
+    }
+}
 
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,6 +42,7 @@ $hasil=$komando-> fetch();
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
             background-color: #f4efe6;
             display: flex;
@@ -35,6 +51,7 @@ $hasil=$komando-> fetch();
             min-height: 100vh;
             padding: 20px;
         }
+
         .auth-card {
             background-color: #ffffff;
             width: 100%;
@@ -44,19 +61,23 @@ $hasil=$komando-> fetch();
             box-shadow: 0 8px 24px rgba(78, 52, 46, 0.12);
             border: 1px solid #e0d5c1;
         }
+
         .brand-header {
             text-align: center;
             margin-bottom: 25px;
         }
+
         .brand-header h2 {
             color: #4e342e;
             font-size: 24px;
             margin-bottom: 6px;
         }
+
         .brand-header p {
             color: #795548;
             font-size: 14px;
         }
+
         .alert-box {
             padding: 12px 16px;
             border-radius: 8px;
@@ -67,9 +88,11 @@ $hasil=$komando-> fetch();
             border: 1px solid #ffcdd2;
             display: block;
         }
+
         .form-group {
             margin-bottom: 18px;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 6px;
@@ -77,6 +100,7 @@ $hasil=$komando-> fetch();
             font-weight: 600;
             color: #4e342e;
         }
+
         .form-control {
             width: 100%;
             padding: 11px 14px;
@@ -86,10 +110,12 @@ $hasil=$komando-> fetch();
             transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
         }
+
         .form-control:focus {
             border-color: #6d4c41;
             box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.15);
         }
+
         .btn-submit {
             width: 100%;
             padding: 12px;
@@ -103,25 +129,30 @@ $hasil=$komando-> fetch();
             transition: background-color 0.2s;
             margin-top: 10px;
         }
+
         .btn-submit:hover {
             background-color: #3e2723;
         }
+
         .auth-footer {
             margin-top: 22px;
             text-align: center;
             font-size: 13px;
             color: #6d4c41;
         }
+
         .auth-footer a {
             color: #8d6e63;
             text-decoration: none;
             font-weight: 600;
         }
+
         .auth-footer a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
 
     <div class="auth-card">
@@ -137,12 +168,12 @@ $hasil=$komando-> fetch();
         <form action="" method="POST">
             <div class="form-group">
                 <label>Email Terdaftar</label>
-                <input type="email" name="email"class="form-control" placeholder="nama@email.com" required>
+                <input type="email" name="email" class="form-control" placeholder="nama@email.com" required>
             </div>
 
             <div class="form-group">
                 <label>Kata Sandi</label>
-                <input type="password" name="password"class="form-control" placeholder="Masukkan kata sandi" required>
+                <input type="password" name="password" class="form-control" placeholder="Masukkan kata sandi" required>
             </div>
 
             <button type="submit" name="masuk" class="btn-submit">Masuk ke Akun</button>
@@ -154,4 +185,5 @@ $hasil=$komando-> fetch();
     </div>
 
 </body>
+
 </html>
