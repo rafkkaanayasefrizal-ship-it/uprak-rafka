@@ -8,12 +8,13 @@ if (isset($_POST['masuk'])) {
     $password = $_POST['password'];
     $ulangi = $_POST['ulangi'];
 
+
     $passwordhas=password_hash($password,PASSWORD_DEFAULT);
     if (empty($nama) || empty($email) || empty($no) || empty($password)) {
         $error = "harap isi semua field";
     } else {
         if ($password != $ulangi) {
-            $error = "password harus sama dengan ulangi password";
+          $error = "password harus sama dengan ulangi password";
         } else {
             if (strlen($password) < 6) {
                 $error = "password harus lebih dari 6 karakter";
@@ -21,7 +22,7 @@ if (isset($_POST['masuk'])) {
                 if (ctype_alpha($password) || ctype_digit($password)) {
                     $error = "harus terdiri huruf dan angka";
                 } else {
-                    $query = "SELECT * FROM tb_pelanggan WHERE email=:email";
+                    $query = "SELECT * FROM tb_pelanggan WHERE email=:email limit 1";
                     $komando = $konfig->prepare($query);
                     $komando->execute([':email' => $email]);
                     if ($komando->rowCount() > 0) {
@@ -33,7 +34,7 @@ if (isset($_POST['masuk'])) {
                         ':nama_lengkap' => $nama,
                         ':email' => $email,
                         ':no_hp' => $no,
-                        ':password' => $passwordhas
+                        ':password' => password_hash("admin12",PASSWORD_DEFAULT)
 
                     ]);
                      header("location:login.php");
@@ -193,11 +194,11 @@ if (isset($_POST['masuk'])) {
             <h2>Kopi Nusantara</h2>
             <p>Formulir Pendaftaran Member Baru</p>
         </div>
-
+<?php if(isset($error)):?>
         <div class="alert-box">
             <span> peringatan<?=  $error; ?></span>
         </div>
-
+<?php endif;?>
         <form action="" method="POST">
             <div class="form-group">
                 <label>Nama Lengkap</label>

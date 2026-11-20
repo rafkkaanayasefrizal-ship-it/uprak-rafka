@@ -1,6 +1,6 @@
 <?php
 include "koneksi.php";
-if(!isset($_SESSION['tb_pelanggan'])){
+if(!isset($_SESSION['tb_pelanggan'])  ){
     header("location:login.php");
     exit();
 }

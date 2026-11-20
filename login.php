@@ -1,30 +1,44 @@
 <?php
 include "koneksi.php";
-$email = $_POST['email'];
-$password = $_POST['password'];
-if (empty($email) || empty($password)) {
-    $error = "field harus di isi";
-} else {
-    $query = "select*from tb_pelanggan where email=:email and password=:password";
-    $komando = $konfig->prepare($query);
-    $komando->execute([
-        ':email' => $email,
-        ':password' => $password
-    ]);
-
-    if ($komando->rowCount() > 0) {
-        if ($_SESSION['status_member'] != "Aktif") {
-            $error = "akun anda sedang dinonaktifkan";
+if (isset($_POST['masuk'])) {
+    try {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $passwordhas = password_hash($password, PASSWORD_DEFAULT);
+        if (empty($email) || empty($password)) {
+            $error = "field harus di isi";
         } else {
-            $hasil = $komando->fetch();
-            if (password_verify($password, $hasil['password'])) {
-                header("location:dashboard.php");
-            } else {
-                $error = "password anda salah";
+            $query = "select*from tb_pelanggan where email=:email";
+            $komando = $konfig->prepare($query);
+            $komando->execute([
+                ':email' => $email
+            ]);
+
+
+            if ($komando->rowCount() > 0) {
+                $hasil = $komando->fetch(PDO::FETCH_ASSOC);
+                //   print_r($hasil);
+
+                if ($hasil['status_member'] !== "Aktif") {
+                    $error = "akun anda sedang dinonaktifkan";
+                } else {
+                   
+                    if (password_verify($password, $hasil['password'])) {
+
+                        $error = "Password salah";
+                    } else {
+                        $_SESSION['tb_pelanggan'] = $hasil['email'];
+                        header("location:dashboard.php");
+                        exit();
+                    }
+                }
             }
         }
+    } catch (PDOException $e) {
+        $error = "email atau password yang anda masukan tidak sesuai" . $e->getMessage();
     }
 }
+
 
 ?>
 
@@ -160,10 +174,11 @@ if (empty($email) || empty($password)) {
             <h2>Kopi Nusantara</h2>
             <p>Portal Loyalitas & Pemesanan Member</p>
         </div>
-
-        <div class="alert-box">
-            <span>Pesan notifikasi sistem ditampilkan di sini</span>
-        </div>
+        <?php if (isset($error)): ?>
+            <div class="alert-box">
+                <span>peringatan<?= $error ?></span>
+            </div>
+        <?php endif; ?>
 
         <form action="" method="POST">
             <div class="form-group">
